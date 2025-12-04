@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 import pandas as pd
 import re
-import os # Thêm thư viện để kiểm tra/xóa file DB (tùy chọn)
+import os  # Thêm thư viện để kiểm tra/xóa file DB (tùy chọn)
 
 ######################################################
 ## I. Cấu hình và Chuẩn bị
@@ -42,6 +42,7 @@ cursor.execute(create_table_sql)
 conn.commit()
 print(f"Đã kết nối và chuẩn bị bảng '{TABLE_NAME}' trong '{DB_FILE}'.")
 
+
 # Hàm đóng driver an toàn
 def safe_quit_driver(driver):
     try:
@@ -50,6 +51,7 @@ def safe_quit_driver(driver):
     except:
         pass
 
+
 ######################################################
 ## II. Lấy Đường dẫn (URLs)
 ######################################################
@@ -57,24 +59,24 @@ def safe_quit_driver(driver):
 print("\n--- Bắt đầu Lấy Đường dẫn ---")
 
 # Lặp qua ký tự 'F' (chr(70))
-for i in range(70, 71): 
+for i in range(70, 71):
     driver = None
     try:
-        driver = webdriver.Chrome() # Khởi tạo driver cho phần này
-        url = "https://en.wikipedia.org/wiki/List_of_painters_by_name_beginning_with_%22"+chr(i)+"%22"
+        driver = webdriver.Chrome()  # Khởi tạo driver cho phần này
+        url = "https://en.wikipedia.org/wiki/List_of_painters_by_name_beginning_with_%22" + chr(i) + "%22"
         driver.get(url)
         time.sleep(3)
 
         # Lấy tất cả thẻ ul
         ul_tags = driver.find_elements(By.TAG_NAME, "ul")
-        
+
         # Thử chọn chỉ mục (index) 20. Cần kiểm tra lại nếu index này thay đổi.
         if len(ul_tags) > 20:
-            ul_painters = ul_tags[20] 
+            ul_painters = ul_tags[20]
             li_tags = ul_painters.find_elements(By.TAG_NAME, "li")
 
             # Lọc các đường dẫn hợp lệ (có thuộc tính href)
-            links = [tag.find_element(By.TAG_NAME, "a").get_attribute("href") 
+            links = [tag.find_element(By.TAG_NAME, "a").get_attribute("href")
                      for tag in li_tags if tag.find_elements(By.TAG_NAME, "a")]
             all_links.extend(links)
         else:
@@ -83,7 +85,7 @@ for i in range(70, 71):
     except Exception as e:
         print(f"Lỗi khi lấy links cho ký tự {chr(i)}: {e}")
     finally:
-        safe_quit_driver(driver) # Đóng driver sau khi xong phần này
+        safe_quit_driver(driver)  # Đóng driver sau khi xong phần này
 
 print(f"Hoàn tất lấy đường dẫn. Tổng cộng {len(all_links)} links đã tìm thấy.")
 
@@ -95,13 +97,13 @@ print("\n--- Bắt đầu Cào và Lưu Trữ Tức thời ---")
 count = 0
 for link in all_links:
     # Giới hạn số lượng truy cập để thử nghiệm nhanh
-    if (count >= 5): # Đã tăng lên 5 họa sĩ để có thêm dữ liệu mẫu
+    if (count >= 5):  # Đã tăng lên 5 họa sĩ để có thêm dữ liệu mẫu
         break
     count = count + 1
 
     driver = None
     try:
-        driver = webdriver.Chrome() 
+        driver = webdriver.Chrome()
         driver.get(link)
         time.sleep(2)
 
@@ -110,7 +112,7 @@ for link in all_links:
             name = driver.find_element(By.TAG_NAME, "h1").text
         except:
             name = ""
-        
+
         # 2. Lấy ngày sinh (Born)
         try:
             birth_element = driver.find_element(By.XPATH, "//th[text()='Born']/following-sibling::td")
@@ -120,7 +122,7 @@ for link in all_links:
             birth = birth_match[0] if birth_match else ""
         except:
             birth = ""
-            
+
         # 3. Lấy ngày mất (Died)
         try:
             death_element = driver.find_element(By.XPATH, "//th[text()='Died']/following-sibling::td")
@@ -129,7 +131,7 @@ for link in all_links:
             death = death_match[0] if death_match else ""
         except:
             death = ""
-            
+
         # 4. Lấy quốc tịch (Nationality)
         try:
             nationality_element = driver.find_element(By.XPATH, "//th[text()='Nationality']/following-sibling::td")
@@ -139,7 +141,7 @@ for link in all_links:
             nationality = ""
 
         safe_quit_driver(driver)
-        
+
         # 5. LƯU TỨC THỜI VÀO SQLITE
         insert_sql = f"""
         INSERT OR IGNORE INTO {TABLE_NAME} (name, birth, death, nationality) 
@@ -153,7 +155,7 @@ for link in all_links:
     except Exception as e:
         print(f"Lỗi khi xử lý hoặc lưu họa sĩ {link}: {e}")
         safe_quit_driver(driver)
-        
+
 print("\nHoàn tất quá trình cào và lưu dữ liệu tức thời.")
 
 ######################################################

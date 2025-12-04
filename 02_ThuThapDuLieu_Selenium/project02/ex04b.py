@@ -16,14 +16,14 @@ password = getpass("Nhập mật khẩu: ")
 # --- Cấu hình Chrome ---
 chrome_options = Options()
 chrome_options.add_argument("--start-maximized")
-service = Service('C:/PATH_TO/chromedriver.exe')  # Thay đường dẫn ChromeDriver của bạn
+service = Service('C:/PATH_TO/chromedriver.exe')
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 try:
     driver.get("https://fileforums.com/")
 
     # --- Chờ username input xuất hiện ---
-    wait = WebDriverWait(driver, 15)  # tối đa 15 giây
+    wait = WebDriverWait(driver, 30)  # tối đa 15 giây
     username_input = wait.until(EC.presence_of_element_located((By.ID, "navbar_username")))
     password_input = driver.find_element(By.ID, "navbar_password")
     login_button = driver.find_element(By.XPATH, "//input[@type='submit' and @value='Log in']")

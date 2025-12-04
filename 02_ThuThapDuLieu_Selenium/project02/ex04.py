@@ -19,7 +19,6 @@ url = 'https://www.reddit.com/login/'
 driver.get(url)
 time.sleep(3)
 
-# Nhap thong tin nguoi dung
 my_email = input('Please provide your email:')
 my_password = getpass.getpass('Please provide your password:')
 
