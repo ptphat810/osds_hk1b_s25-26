@@ -9,14 +9,9 @@ from bs4 import BeautifulSoup
 ######################################################
 ## I. Cấu hình và Chuẩn bị
 ######################################################
-# Định nghĩa thư mục lưu file
 directory = 'data'
-
-# Kiểm tra nếu thư mục chưa tồn tại, sẽ tạo mới
 if not os.path.exists(directory):
     os.makedirs(directory)
-
-# Định nghĩa đường dẫn file
 DB_FILE = os.path.join(directory, 'Painters.db')
 TABLE_NAME = 'painters_info'
 
@@ -94,7 +89,7 @@ print("\n--- Bắt đầu cào và lưu dữ liệu ---")
 count = 0
 
 for link in links:
-    if count >= 5:  # Giới hạn thử nghiệm
+    if count >= len(links):
         break
     count += 1
     print(f"\n[{count}] {link}")
@@ -169,7 +164,6 @@ for link in links:
 conn.close()
 print("\nĐã đóng kết nối cơ sở dữ liệu.")
 
-
 ######################################################
 ## IV. Truy vấn SQL Mẫu và Đóng kết nối
 ######################################################
@@ -191,4 +185,113 @@ C. Yêu Cầu Nhóm và Sắp Xếp
 9. Sắp xếp và hiển thị tên của tất cả họa sĩ theo thứ tự bảng chữ cái (A-Z).
 10. Nhóm và đếm số lượng họa sĩ theo từng quốc tịch.
 """
+# Kết nối SQLite
+conn = sqlite3.connect("data/Painters.db")
+cursor = conn.cursor()
+
+# Code
+print("\n=================== 1. Đếm tổng số họa sĩ ===================")
+sql1 = """
+SELECT COUNT(*) FROM painters_info
+"""
+cursor.execute(sql1)
+r = cursor.fetchall()
+print(r[0][0])
+
+print("\n=================== 2. 5 dòng đầu tiên ===================")
+sql2 = """
+SELECT * FROM painters_info LIMIT 5;
+"""
+cursor.execute(sql2)
+rows = cursor.fetchall()
+for r in rows:
+    print(r)
+
+print("\n=================== 3. Danh sách quốc tịch duy nhất ===================")
+sql3 = """
+SELECT DISTINCT nationality FROM painters_info;
+"""
+cursor.execute(sql3)
+for r in cursor.fetchall():
+    print(r[0])
+
+print("\n=================== 4. Họa sĩ tên bắt đầu bằng 'F' ===================")
+sql4 = """
+SELECT name FROM painters_info 
+WHERE name LIKE 'F%';
+"""
+cursor.execute(sql4)
+for r in cursor.fetchall():
+    print(r[0])
+
+print("\n=================== 5. Họa sĩ có quốc tịch chứa 'French' ===================")
+sql5 = """
+SELECT name, nationality FROM painters_info 
+WHERE nationality LIKE '%French%';
+"""
+cursor.execute(sql5)
+for r in cursor.fetchall():
+    print(r)
+
+print("\n=================== 6. Họa sĩ không có thông tin quốc tịch ===================")
+sql6 = """
+SELECT name FROM painters_info 
+WHERE nationality IS NULL OR nationality = '';
+"""
+cursor.execute(sql6)
+for r in cursor.fetchall():
+    print(r[0])
+
+print("\n=================== 7. Họa sĩ có đầy đủ ngày sinh và ngày mất ===================")
+sql7 = """
+SELECT name FROM painters_info 
+WHERE birth <> '' AND death <> '';
+"""
+cursor.execute(sql7)
+for r in cursor.fetchall():
+    print(r[0])
+
+print("\n=================== 8. Họa sĩ có tên chứa 'Fales' ===================")
+sql8 = """
+SELECT * FROM painters_info 
+WHERE name LIKE '%Fales%';
+"""
+cursor.execute(sql8)
+for r in cursor.fetchall():
+    print(r)
+
+print("\n=================== 9. Sắp xếp tên họa sĩ A → Z ===================")
+sql9 = """
+SELECT name FROM painters_info 
+ORDER BY name ASC;
+"""
+cursor.execute(sql9)
+for r in cursor.fetchall():
+    print(r[0])
+
+print("\n=================== 10. Nhóm và đếm số họa sĩ theo quốc tịch ===================")
+sql10 = """
+SELECT nationality, COUNT(*) FROM painters_info 
+GROUP BY nationality 
+ORDER BY COUNT(*) DESC;
+"""
+cursor.execute(sql10)
+for r in cursor.fetchall():
+    print(r)
+
+# print("\nSố lượng họa sĩ có đầy đủ thông tin")
+# sql="""
+# SELECT COUNT(*)
+# FROM painters_info
+# WHERE name IS NOT NULL
+#   AND birth IS NOT NULL AND birth <> ''
+#   AND death IS NOT NULL AND death <> ''
+#   AND nationality IS NOT NULL AND nationality <> '';
+# """
+# cursor.execute(sql)
+# for r in cursor.fetchall():
+#     print(r)
+
+# Đóng kết nối
+conn.close()
 
