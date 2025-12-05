@@ -1,7 +1,18 @@
 import sqlite3
+import os
+
+# Định nghĩa thư mục lưu file
+directory = 'data'
+
+# Kiểm tra nếu thư mục chưa tồn tại, sẽ tạo mới
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
+# Định nghĩa đường dẫn file
+DB_FILE = os.path.join(directory, 'Inventory.db')
 
 # 1. Kết nối tới cơ sở dữ liệu
-conn = sqlite3.connect("inventory.db")
+conn = sqlite3.connect(DB_FILE)
 
 # Tạo đối tượng 'cursor' để thực thi các câu lệnh SQL
 cursor = conn.cursor()
@@ -58,5 +69,18 @@ for p in all_products:
     print(f"{p[0]:<4} | {p[1]:<20} | {p[2]:<10} | {p[3]:<10}")
 
 # 3.3 UPDATE
+sql4 = """
+UPDATE products
+SET price = ?
+WHERE name = ?
+"""
+cursor.execute(sql4, (400.99, "Laptop A100"))
+conn.commit()
 
 # 3.4 DELETE
+sql5 = """
+DELETE FROM products
+WHERE name = ?
+"""
+cursor.execute(sql5, ("Mouse Wireless X",))
+conn.commit()
