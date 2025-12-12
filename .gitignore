@@ -206,7 +206,5 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-
+# Local
 .idea
-02_ThuThapDuLieu_Selenium/project02/config.env
-token.txt

@@ -1,0 +1,42 @@
+// Bước 1: Kết nối với MongoDB và tạo cơ sở dữ liệu
+// Sử dụng MongoDB shell để kết nối và chọn cơ sở dữ liệu
+use driveManagement
+
+// Bước 2: Tạo bộ sưu tập để lưu trữ thông tin tệp
+// Tạo bộ sưu tập 'files' để quản lý các tệp trên Google Drive
+db.files.insertMany([
+    { file_id: 1, name: "Report.pdf", size: 2048, owner: "Nguyen Van A", created_at: new Date("2024-01-10"), shared: false },
+    { file_id: 2, name: "Presentation.pptx", size: 5120, owner: "Tran Thi B", created_at: new Date("2024-01-15"), shared: true },
+    { file_id: 3, name: "Image.png", size: 1024, owner: "Le Van C", created_at: new Date("2024-01-20"), shared: false },
+    { file_id: 4, name: "Spreadsheet.xlsx", size: 3072, owner: "Pham Van D", created_at: new Date("2024-01-25"), shared: true },
+    { file_id: 5, name: "Notes.txt", size: 512, owner: "Nguyen Thi E", created_at: new Date("2024-01-30"), shared: false }
+])
+
+// Bước 3: Thực hiện các truy vấn để quản lý tệp
+// 3.1: Xem tất cả tệp trong bộ sưu tập 'files'
+db.files.find()
+
+// 3.2: Tìm tệp có kích thước lớn hơn 2000KB
+db.files.find({ size: { $gt: 2000 } })
+
+// 3.3: Đếm tổng số tệp
+db.files.countDocuments()
+
+// 3.4: Tìm tất cả tệp được chia sẻ
+db.files.find({ shared: true })
+
+// 3.5: Thống kê số lượng tệp theo chủ sở hữu
+db.files.aggregate([
+    { $group: { _id: "$owner", count: { $sum: 1 } } }
+])
+
+// Bước 4: Cập nhật và xóa thông tin tệp
+// 4.1: Cập nhật trạng thái chia sẻ của tệp với file_id = 1 thành true
+db.files.updateOne({ file_id: 1 }, { $set: { shared: true } })
+
+// 4.2: Xóa tệp với file_id = 3
+db.files.deleteOne({ file_id: 3 })
+
+// Bước 5: Xem lại dữ liệu sau khi cập nhật và xóa
+// Kiểm tra lại tất cả tệp trong bộ sưu tập
+db.files.find()

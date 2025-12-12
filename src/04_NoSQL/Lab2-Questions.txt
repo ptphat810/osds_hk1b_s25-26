@@ -1,0 +1,22 @@
+// Câu hỏi 1: Tìm tất cả tệp của người dùng có tên là "Nguyen Van A".
+db.files.find({ owner: "Nguyen Van A" })
+
+// Câu hỏi 2: Tìm tệp lớn nhất trong bộ sưu tập.
+db.files.find().sort({ size: -1 }).limit(1)
+
+// Câu hỏi 3: Tìm số lượng tệp có kích thước nhỏ hơn 1000KB.
+db.files.countDocuments({ size: { $lt: 1000 } })
+
+// Câu hỏi 4: Tìm tất cả tệp được tạo trong tháng 1 năm 2024.
+db.files.find({
+    created_at: {
+        $gte: new Date("2024-01-01"),
+        $lt: new Date("2024-02-01")
+    }
+})
+
+// Câu hỏi 5: Cập nhật tên tệp với `file_id` là 4 thành "New Spreadsheet.xlsx".
+db.files.updateOne({ file_id: 4 }, { $set: { name: "New Spreadsheet.xlsx" } })
+
+// Câu hỏi 6: Xóa tất cả tệp có kích thước nhỏ hơn 1000KB.
+db.files.deleteMany({ size: { $lt: 1000 } })

@@ -1,0 +1,71 @@
+Bước 1: Cài đặt MongoDB
+Tải xuống MongoDB:
+Truy cập trang tải MongoDB và chọn phiên bản phù hợp với hệ điều hành của bạn.
+Cài đặt MongoDB:
+Windows: Chạy tệp cài đặt và làm theo hướng dẫn. Bạn có thể chọn cài đặt phiên bản Compass (GUI) nếu muốn.
+macOS: Sử dụng Homebrew. Mở terminal và chạy:
+brew tap mongodb/brew
+brew install mongodb-community
+Linux: Làm theo hướng dẫn trên trang chính thức của MongoDB cho từng bản phân phối (Ubuntu, CentOS, v.v.).
+Khởi động MongoDB:
+Windows: Mở Command Prompt và chạy:
+mongod
+macOS/Linux: Mở terminal và chạy:
+mongod
+Lưu ý: Bạn có thể cần tạo thư mục dữ liệu trước khi chạy mongod. Theo mặc định, thư mục dữ liệu là /data/db trên macOS/Linux. Để tạo thư mục này, chạy:
+sudo mkdir -p /data/db
+sudo chown -R `id -un` /data/db
+Mở một cửa sổ terminal mới và khởi động MongoDB Shell:
+mongo
+
+Bước 2: Thực hiện các thao tác cơ bản trên MongoDB
+// Bước 1: Tạo cơ sở dữ liệu
+use facebookData
+
+// Bước 2: Tạo bộ sưu tập người dùng
+db.users.insertMany([
+    { user_id: 1, name: "Nguyen Van A", email: "a@gmail.com", age: 25 },
+    { user_id: 2, name: "Tran Thi B", email: "b@gmail.com", age: 30 },
+    { user_id: 3, name: "Le Van C", email: "c@gmail.com", age: 22 }
+])
+
+// Bước 3: Tạo bộ sưu tập bài đăng
+db.posts.insertMany([
+    { post_id: 1, user_id: 1, content: "Hôm nay thật đẹp trời!", created_at: new Date("2024-10-01") },
+    { post_id: 2, user_id: 2, content: "Mình vừa xem một bộ phim hay!", created_at: new Date("2024-10-02") },
+    { post_id: 3, user_id: 1, content: "Chúc mọi người một ngày tốt lành!", created_at: new Date("2024-10-03") }
+])
+
+// Bước 4: Tạo bộ sưu tập bình luận
+db.comments.insertMany([
+    { comment_id: 1, post_id: 1, user_id: 2, content: "Thật tuyệt vời!", created_at: new Date("2024-10-01") },
+    { comment_id: 2, post_id: 2, user_id: 3, content: "Mình cũng muốn xem bộ phim này!", created_at: new Date("2024-10-02") },
+    { comment_id: 3, post_id: 3, user_id: 1, content: "Cảm ơn bạn!", created_at: new Date("2024-10-03") }
+])
+
+// Bước 5: Truy Vấn Dữ Liệu
+// Xem tất cả người dùng
+db.users.find()
+
+// Xem tất cả bài đăng của người dùng với user_id = 1
+db.posts.find({ user_id: 1 })
+
+// Xem tất cả bình luận cho bài đăng với post_id = 1
+db.comments.find({ post_id: 1 })
+
+// Truy vấn người dùng có độ tuổi trên 25
+db.users.find({ age: { $gt: 25 } })
+
+// Truy vấn tất cả bài đăng được tạo trong tháng 10
+db.posts.find({ created_at: { $gte: new Date("2024-10-01"), $lt: new Date("2024-11-01") } })
+
+// Bước 6: Cập Nhật và Xóa Dữ Liệu
+// Cập nhật nội dung bài đăng của người dùng với post_id = 1
+db.posts.updateOne({ post_id: 1 }, { $set: { content: "Hôm nay thời tiết thật đẹp!" } })
+
+// Xóa bình luận với comment_id = 2
+db.comments.deleteOne({ comment_id: 2 })
+
+// Xem lại dữ liệu sau khi cập nhật và xóa
+db.posts.find()  // Xem lại tất cả bài đăng
+db.comments.find()  // Xem lại tất cả bình luận

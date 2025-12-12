@@ -1,0 +1,51 @@
+// Đề Thực Hành: Quản Lý Dữ Liệu TikTok Bằng MongoDB
+
+// Bước 1: Tạo Cơ Sở Dữ Liệu và Bộ Sưu Tập
+
+// 1.1: Chọn hoặc tạo cơ sở dữ liệu tiktok
+use tiktok
+
+// 1.2: Tạo bộ sưu tập 'users' để lưu trữ thông tin người dùng
+db.users.insertMany([
+    { user_id: 1, username: "user1", full_name: "Nguyen Van A", followers: 1500, following: 200 },
+    { user_id: 2, username: "user2", full_name: "Tran Thi B", followers: 2000, following: 300 },
+    { user_id: 3, username: "user3", full_name: "Le Van C", followers: 500, following: 100 }
+])
+
+// 1.3: Tạo bộ sưu tập 'videos' để lưu trữ thông tin video
+db.videos.insertMany([
+    { video_id: 1, user_id: 1, title: "Video 1", views: 10000, likes: 500, created_at: new Date("2024-01-01") },
+    { video_id: 2, user_id: 2, title: "Video 2", views: 20000, likes: 1500, created_at: new Date("2024-01-05") },
+    { video_id: 3, user_id: 3, title: "Video 3", views: 5000, likes: 200, created_at: new Date("2024-01-10") }
+])
+
+// Bước 2: Thực Hiện Các Truy Vấn Cơ Bản
+
+// 2.1: Xem tất cả người dùng
+db.users.find()
+
+// 2.2: Tìm video có nhiều lượt xem nhất
+db.videos.find().sort({ views: -1 }).limit(1)
+
+// 2.3: Tìm tất cả video của người dùng có username là "user1"
+db.videos.find({ user_id: 1 })
+
+// 2.4: Tính trung bình lượt thích của các video
+db.videos.aggregate([
+    { $group: { _id: null, averageLikes: { $avg: "$likes" } } }
+])
+
+// 2.5: Tìm tất cả người dùng có hơn 1000 người theo dõi
+db.users.find({ followers: { $gt: 1000 } })
+
+// Bước 3: Cập Nhật và Xóa Dữ Liệu
+
+// 3.1: Cập nhật số người theo dõi của người dùng với `user_id` là 1 lên 2000
+db.users.updateOne({ user_id: 1 }, { $set: { followers: 2000 } })
+
+// 3.2: Xóa video có `video_id` là 3
+db.videos.deleteOne({ video_id: 3 })
+
+// 3.3: Xem lại dữ liệu sau khi cập nhật và xóa
+db.users.find() // Xem lại tất cả người dùng
+db.videos.find() // Xem lại tất cả video

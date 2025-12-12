@@ -1,11 +1,6 @@
-# osds_hk1b_s25-26
-
-# Videos:
-
-https://youtu.be/uiNRQj5PT0A
-
-https://youtu.be/U7X7BpXpWxM
-
-https://youtu.be/PUphGUCVYV4
-
-https://youtu.be/vrm1lJ2vr1U
+## Selenium WebDriver Versions
+| Browser        | Driver Version |
+|----------------|----------------|
+| Microsoft Edge | 143.0.3650.80  |
+| Firefox        | 0.36.0         |
+| Chrome         | 143.0.7499.40  |
